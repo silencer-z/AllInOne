@@ -1,0 +1,196 @@
+#splash {
+    position: absolute;
+    top: calc(50% - 180px);
+    width: 500px;
+    height: 400px;
+    left: calc(90% - 500px);
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: 184px 104px 70px;
+    overflow: visible;
+}
+
+#splash>div {
+    position: relative;
+    width: auto;
+    height: auto;
+    top: auto;
+
+    box-shadow: none;
+    background-image: none;
+    margin: 0;
+}
+
+#splash:not(.touch)>div:hover:not(.clicked) {
+    transform: none;
+}
+
+#splash.slim>div>.splashtext {
+    position: absolute;
+    font-family: 'ATLL', 'HYZLSJ';
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    writing-mode: horizontal-tb;
+    -webkit-writing-mode: horizontal-tb;
+}
+
+#splash.slim>div>.avatar {
+    box-shadow: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transition: all 0.5s;
+}
+
+/* 身份 */
+#splash>div:nth-child(1) {
+    grid-column: span 14;
+    margin: 0;
+}
+
+#splash>div:nth-child(1)>.avatar {
+    background: url(image/home/Identities_normal.png) no-repeat left !important;
+
+}
+
+#splash>div:nth-child(1):hover>.avatar {
+    background-image: url(image/home/Identities_hover.png) !important;
+    transition: all 0.5s;
+}
+
+#splash>div:nth-child(1)>.splashtext {
+    font-size: 90px;
+    padding-right: 20px;
+    line-height: 180px;
+}
+
+/* 国战 */
+#splash>div:nth-child(2) {
+    grid-column: span 6;
+    justify-content: end;
+    display: flex;
+}
+
+#splash>div:nth-child(2)>.avatar {
+    background: url(image/home/National_war_normal.png) no-repeat right !important;
+
+}
+
+#splash>div:nth-child(2):hover>.avatar {
+    background-image: url(image/home/National_war_hover.png) !important;
+    transition: all 0.5s;
+}
+
+#splash>div:nth-child(2)>.splashtext {
+    font-size: 45px;
+    padding-right: 15px;
+    line-height: 90px;
+}
+
+/* 对决 */
+#splash>div:nth-child(3) {
+    grid-column: span 10;
+}
+
+#splash>div:nth-child(3)>.avatar {
+    background: url(image/home/Confrontation_normal.png) no-repeat left !important;
+
+}
+
+#splash>div:nth-child(3):hover>.avatar {
+    background-image: url(image/home/Confrontation_hover.png) !important;
+    transition: all 0.5s;
+}
+
+#splash>div:nth-child(3)>.splashtext {
+    font-size: 45px;
+    padding-right: 35px;
+    line-height: 100px;
+}
+
+/* 斗地主 */
+#splash>div:nth-child(6) {
+    grid-column: span 10;
+    justify-content: end;
+    display: flex;
+}
+
+#splash>div:nth-child(6)>.avatar {
+    background: url(image/home/Landlord_noramal.png) no-repeat right !important;
+
+}
+
+#splash>div:nth-child(6):hover>.avatar {
+    background-image: url(image/home/Landlord_hover.png) !important;
+    transition: all 0.5s;
+}
+
+#splash>div:nth-child(6)>.splashtext {
+    font-size: 45px;
+    padding-right: 5px;
+    line-height: 100px;
+}
+
+/* 联机 */
+#splash>div:nth-child(4) {
+    grid-column: span 5;
+    order: 1;
+}
+
+#splash>div:nth-child(4)>.splashtext {
+    font-size: 50px;
+    line-height: 10px;
+}
+
+/* 挑战 */
+#splash>div:nth-child(5) {
+    grid-column: span 5;
+    order: 2;
+}
+
+#splash>div:nth-child(5)>.splashtext {
+    font-size: 50px;
+    line-height: 10px;
+}
+
+/* 单挑 */
+#splash>div:nth-child(7) {
+    grid-column: span 5;
+    order: 3;
+}
+
+#splash>div:nth-child(7)>.splashtext {
+    font-size: 50px;
+    line-height: 10px;
+}
+
+/* 乱斗 */
+#splash>div:nth-child(11) {
+    grid-column: span 5;
+    order: 4;
+    margin: 0;
+}
+
+#splash>div:nth-child(11)>.splashtext {
+    font-size: 50px;
+    line-height: 10px;
+
+}
+
+/* 战棋 */
+#splash>div:nth-child(8) {
+    display: none;
+}
+
+/* 塔防 */
+#splash>div:nth-child(9) {
+    display: none;
+}
+
+/* 炉石 */
+#splash>div:nth-child(10) {
+    display: none;
+
+}

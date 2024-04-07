@@ -1,0 +1,100 @@
+/* 用于技能和身份的字体 */
+@font-face {
+  font-family: 'HYZLSJ';
+  src: url(assets/fonts/HYZLSJ.ttf);
+}
+/* 用于武将字体 */
+@font-face {
+  font-family: 'WDZLFT';
+  src: url(assets/fonts/WDZLFT.TTF);
+}
+@font-face {
+  font-family: 'FZLBJW';
+  src: url(assets/fonts/FZLBJW.TTF);
+}
+/* 用于角色弹框标题的字体 */
+@font-face {
+  font-family: 'ATLL';
+  src: url(assets/fonts/ATLL.OTF);
+}
+
+@font-face {
+  font-family: 'FZLSFT';
+  src: url(assets/fonts/FZLSFT.ttf);
+}
+.menu-container > .menu.main.cxy-import-dialog {
+  top: 50% !important;
+  left: 50% !important;
+  width: 420px;
+  height: 130px;
+  padding: 15px;
+  transform: translate(-50%, -50%);
+}
+.menu.main.cxy-import-dialog > .caption {
+  padding-top: 0;
+  padding-bottom: 8px;
+}
+
+/*--------（去除按钮虚化）--------*/
+#control {
+	text-align: center;
+	z-index: 5;
+	top: calc(200% / 3);
+	left: calc(5% + 240px);
+	width: calc(90% - 480px);
+	pointer-events: none
+}
+#control>* {
+	pointer-events: auto;
+}
+#window:not(.nopointer) #control{
+	cursor:pointer;
+}
+#control.nozoom>div {
+	transition-property: opacity;
+}
+#control>div.stayleft{
+	transition-property: opacity !important;
+}
+.control {
+	padding: 2px 4px;
+}
+.control {
+	font-size: 18px;
+	white-space: nowrap;
+	overflow: hidden;
+	opacity: 0
+}
+.control.removing.removing2 {
+	transform: scale(0.2)
+}
+.control>div {
+	position: relative;
+	padding: 3px;
+	margin: 0
+}
+.control.disabled{
+	opacity: 1 !important;
+	cursor: default !important;
+}
+#control>div {
+	position: absolute;
+	left: 50%;
+}
+/*-----更改无懈蓝框-------*/
+.glow:not(.button):not(.card){
+	box-shadow: none !important;
+	-webkit-filter: grayscale(100%);
+	background-size: 100% 100%;
+	z-index:89;
+	pointer-events: none;
+}
+
+.shousha_menu {
+    width:100%;
+    border-radius: 3px;
+    background-color: rgba(134,200,241,0.5);
+    font-family:yuanli;
+    padding: 0.5px;
+    /*cursor: pointer;*/
+}

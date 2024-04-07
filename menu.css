@@ -1,0 +1,166 @@
+.main.menu.dialog {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    left: 0;
+    /* top: 0; */
+    display: flex;
+    flex-direction: column;
+    border-radius: 0;
+    box-shadow: none;
+    background-image: none;
+
+    transition: all 0.3s;
+    transform-origin: center;
+}
+
+
+.main.menu.dialog>.menu-tab {
+    height: 80px;
+    width: 100%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-width: 0;
+
+    background: url(image/menu/title_bg.png) center center no-repeat;
+    background-size: 100% 100%;
+}
+
+.main.menu.dialog>.menu-tab>div {
+    width: 150px;
+    height: 55px;
+
+    text-align: center;
+    line-height: 55px;
+    font-size: 20px;
+
+    background: url(image/menu/btn1_normal.png) center center no-repeat;
+    background-size: contain;
+}
+
+.main.menu.dialog>.menu-tab>div.active {
+    background-image: url(image/menu/btn1_active.png);
+}
+
+.main.menu.dialog>.menu-tab-bar {
+    display: none;
+}
+
+.main.menu.dialog>.menu-content {
+    height: calc(100% - 80px);
+    background: url(image/menu/menu_bg.png) center top no-repeat;
+    background-size: 101% 100%;
+}
+
+.main.menu.dialog>.menu-content>div {
+    height: 100%;
+}
+
+.main.menu.dialog>.menu-content>div>.left.pane {
+    width: 200px;
+    height: 100%;
+    float: left;
+    display: flex;
+    flex-direction: column;
+
+    background: url(image/menu/left_pane_bg.png) left top no-repeat;
+    background-size: 80% 100%;
+    overflow-y: scroll;
+    overflow-x: visible;
+}
+
+.main.menu.dialog>.menu-content>div>.left.pane>.menubutton {
+    min-height: 70px;
+    width: 160px;
+    line-height: 70px;
+    text-align: center;
+    padding: 0 40px 0 0;
+    margin: 0;
+    box-shadow: none;
+    background-image: none;
+}
+
+.main.menu.dialog>.menu-content>div>.left.pane>.menubutton.active {
+
+    background: url(image/menu/btn2_active.png) no-repeat center center;
+    background-position: -200px -10px;
+    background-size: 200% 128%;
+    box-shadow: none;
+    transition: none;
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane {
+    width: calc(80% - 200px);
+    height: 98%;
+    left: calc(5% + 200px);
+    padding: 0 50px;
+    margin-top: 2%;
+    float: right;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane>div {
+    width: 100% !important;
+    padding: 0;
+    margin: 0;
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane>div>.config {
+    height: 45px;
+    width: calc(100% - 15px) !important;
+    right: 0;
+
+    padding: 8px 4.5px;
+    margin: 3px 3px !important;
+
+    line-height: 45px;
+    text-align: left;
+    text-indent: 20px;
+
+    background: url(image/menu/config_bg.png) center center no-repeat;
+    background-size: 100% 100%;
+
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane>div>.config.hidden {
+    display: none;
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane>div>.config>div {
+    float: right;
+    right: 30px
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane>div>.config.toggle>div {
+    height: 45px;
+    width: 60px;
+
+    background: url(image/menu/switch_off.png) right center no-repeat;
+    background-size: 100%;
+    box-shadow: none;
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane>div>.config.toggle>div>div {
+    display: none;
+}
+
+.main.menu.dialog>.menu-content>div>.right.pane>div>.config.toggle.on>div {
+    background-image: url(image/menu/switch_on.png);
+}
+
+.main.menu.dialog>.menu-content>div>.menubutton.round {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: calc(100% - 150px);
+    top: calc(100% - 150px);
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
