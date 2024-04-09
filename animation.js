@@ -185,16 +185,27 @@ var AIOlib;
 			this.timestepMap = {};								// 内部属性，不可更改
 			this.flipX = initParam.flipX;
 			this.flipY = initParam.flipY;
-		};
-		
+		}
+		/**
+		 * 改变透明度
+		 * @param opacity 透明度
+		 * @param duration 时间
+		 * @returns {APNode}
+		 */
 		APNode.prototype.fadeTo = function (opacity, duration) {
 			if (opacity != undefined) {
 				this.updateTimeStep('opacity', (this.opacity == undefined ? 1 : this.opacity), opacity, duration);
 				this.opacity = opacity;
 			}
 			return this;
-		}
-		
+		};
+		/**
+		 * 改变位置
+		 * @param x 终点x坐标
+		 * @param y 重点y坐标
+		 * @param duration 时间
+		 * @returns {APNode}
+		 */
 		APNode.prototype.moveTo = function (x, y, duration) {
 			if (x != undefined) {
 				this.updateTimeStep('x', (this.x == undefined ? [0, 0.5] : this.x), x, duration);
@@ -206,7 +217,12 @@ var AIOlib;
 			}
 			return this;
 		};
-		
+		/**
+		 * 缩放尺寸
+		 * @param scale 指定缩放尺寸
+		 * @param duration 时间
+		 * @returns {APNode}
+		 */
 		APNode.prototype.scaleTo = function (scale, duration) {
 			if (scale != undefined) {
 				this.updateTimeStep('scale', (this.scale == undefined ? 1 : this.scale), scale, duration);
@@ -215,7 +231,12 @@ var AIOlib;
 			
 			return this;
 		};
-		
+		/**
+		 * 旋转角度
+		 * @param angle 旋转的角度
+		 * @param duration 时间
+		 * @returns {APNode}
+		 */
 		APNode.prototype.rotateTo = function (angle, duration) {
 			if (angle != undefined) {
 				this.updateTimeStep('angle', (this.angle == undefined ? 0 : this.angle), angle, duration);
@@ -224,7 +245,10 @@ var AIOlib;
 			
 			return this;
 		};
-		
+		/**
+		 * 更新位置
+		 * @param e
+		 */
 		APNode.prototype.update = function (e) {
 			function calc(value, refer, dpr) {
 				if (Array.isArray(value)) {
@@ -243,7 +267,7 @@ var AIOlib;
 					var rect = domNode.getBoundingClientRect();
 					this.referBounds = {
 						x: rect.left,
-						//FIXME 需要添加对应的方法
+						//FIXME 需要添加对应的方法 获取区域大小
 						y: AIO.get.bodySize().height - rect.bottom,
 						width: rect.width,
 						height: rect.height,
@@ -283,9 +307,8 @@ var AIOlib;
 				} else {
 					renderX += this.referBounds.x * dpr;
 				}
-				
 				if (renderY == undefined) {
-					renderY = (this.referBounds.y + this.referBounds.height / 2) * dpr;;
+					renderY = (this.referBounds.y + this.referBounds.height / 2) * dpr;
 				} else {
 					renderY += this.referBounds.y * dpr;;
 				}
@@ -358,7 +381,11 @@ var AIOlib;
 			
 			if (this.onupdate) this.onupdate();
 		};
-		
+		/**
+		 * 设置动作
+		 * @param action 动作名
+		 * @param transtion mixDuration 默认500
+		 */
 		APNode.prototype.setAction = function (action, transtion) {
 			if (this.skeleton && this.skeleton.node == this) {
 				if (this.skeleton.data.findAnimation(action) == null) return console.error('setAction: 未找到对应骨骼动作');
@@ -369,7 +396,10 @@ var AIOlib;
 				console.error('setAction: 节点失去关联');
 			}
 		};
-		
+		/**
+		 * 重置为默认动作
+		 * @param transtion mixDuration 默认500
+		 */
 		APNode.prototype.resetAction = function (transtion) {
 			if (this.skeleton && this.skeleton.node == this) {
 				transtion = transtion == undefined ? 0.5 : transtion / 1000;
@@ -379,10 +409,11 @@ var AIOlib;
 				console.error('resetAction: 节点失去关联');
 			}
 		};
-		
+		/**
+		 * 执行APNode.oncomplete中的函数
+		 */
 		APNode.prototype.complete = function () {
-			if (!this.oncomplete)
-				return;
+			if (!this.oncomplete) return;
 			
 			if (typeof this.oncomplete == 'string') {
 				var code = this.oncomplete;
@@ -392,11 +423,8 @@ var AIOlib;
 					this.oncomplete = undefined;
 					return console.error(this.name + ' 的oncomplete函数语法错误');
 				}
-				
 				this.oncomplete = new Function(code.substring(a + 1, b));
 			}
-				
-			
 			if (typeof this.oncomplete == 'function')
 				this.oncomplete();
 		};
@@ -747,7 +775,8 @@ var AIOlib;
 					skeleton = skeletons[i];
 					if (skeleton.name == sprite.name && skeleton.completed) break;
 					skeleton = null;
-				}; if (!skeleton) skeleton = this.prepSpine(sprite.name);
+				};
+				if (!skeleton) skeleton = this.prepSpine(sprite.name);
 				
 				if (!(sprite instanceof AIOlib.APNode)) {
 					var param = sprite;
@@ -1308,8 +1337,8 @@ if (importModule)
 					}
 				}
 			};read();read();
-
-			var skillAnimation = (function(){
+			// 装备卡牌特效
+			var skillAnimation = (void function(){
 				var defines = {
 					skill:{
 						bagua_skill: { skill: 'bagua_skill', name: 'effect_baguazhen', scale: 0.6 },
@@ -1449,7 +1478,6 @@ if (importModule)
 					}
 				}
 			})();
-
 			return animation;
 		}
 	)();
@@ -1475,12 +1503,6 @@ if (importModule)
 					y: [20, 0.15],
 					height: [0, 0.55],
 				},
-				/*动态边框: {//这部分别管
-					name: 'skin_chengzhu_ChengZhuBianKuang',
-					x: [12, 0.893],
-					y: [16, 0.15],
-					height: [0, 0.53],
-				},*/
 			},
 			skin_caojinyu: {
 				惊鸿: {
@@ -1496,7 +1518,7 @@ if (importModule)
 					height: [0, 0.75],
 				},
 			},
-			skin_wangrong: {
+			skin_wanrong: {
 				云裳花容: {
 					name: 'skin_wanrong_YunChangHuaRong',
 					x: [-20, 0.5],
