@@ -5876,6 +5876,184 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					},
 
 				},
+				dialog:{
+					create:function(className, parentNode, tagName){
+						var element = !tagName ? document.createElement('div') : document.createElement(tagName);
+						for(var i in AIO.dialog){
+							if (AIO.dialog[i]) element[i] = AIO.dialog[i];
+						}
+
+						element.listens = {};
+						for(var i in AIO.dialog.listens){
+							if (AIO.dialog.listens[i]) element.listens[i] = decadeUI.dialog.listens[i];
+						}
+
+						element.listens._dialog = element;
+						element.listens._list = [];
+
+						if (className) element.className = className;
+						if (parentNode) parentNode.appendChild(element);
+
+						return element;
+					},
+					open:function(){
+						if (this == AIO.dialog) return console.error('undefined');
+					},
+					show:function(){
+						if (this == AIO.dialog) return console.error('undefined');
+
+						this.classList.remove('hidden');
+					},
+					hide:function(){
+						if (this == AIO.dialog) return console.error('undefined');
+
+						this.classList.add('hidden');
+					},
+					animate:function(property, duration, toArray, fromArrayOptional){
+						if (this == AIO.dialog) return console.error('undefined');
+						if (property == null || duration == null || toArray == null) return console.error('arguments');
+
+						var propArray = property.replace(/\s*/g, '').split(',');
+						if (!propArray || propArray.length == 0) return console.error('property');
+
+						var realDuration = 0;
+						if (duration.lastIndexOf('s') != -1){
+							if (duration.lastIndexOf('ms') != -1){
+								duration = duration.replace(/ms/, '');
+								duration = parseInt(duration);
+								if (isNaN(duration)) return console.error('duration');
+								realDuration = duration;
+							}else{
+								duration = duration.replace(/s/, '');
+								duration = parseFloat(duration);
+								if (isNaN(duration)) return console.error('duration');
+								realDuration = duration * 1000;
+							}
+						}else {
+							duration = parseInt(duration);
+							if (isNaN(duration)) return console.error('duration');
+							realDuration = duration;
+						}
+
+						if (fromArrayOptional){
+							for (var i = 0; i < propArray.length; i++){
+								this.style.setProperty(propArray[i], fromArrayOptional[i]);
+							}
+						}
+
+						var duraBefore = this.style.transitionDuration;
+						var propBefore = this.style.transitionProperty;
+						this.style.transitionDuration = realDuration + 'ms';
+						this.style.transitionProperty = property;
+
+						ui.refresh(this);
+						for (var i = 0; i < propArray.length; i++){
+							this.style.setProperty(propArray[i], toArray[i]);
+						}
+
+						var restore = this;
+						setTimeout(function(){
+							restore.style.transitionDuration = duraBefore;
+							restore.style.transitionProperty = propBefore;
+						}, realDuration);
+					},
+					close:function(delayTime, fadeOut){
+						if (this == AIO.dialog) return console.error('undefined');
+						this.listens.clear();
+
+						if (!this.parentNode) return;
+
+						if (fadeOut === true && delayTime) {
+							this.animate('opacity', delayTime, 0);
+						}
+
+						if (delayTime) {
+							var remove = this;
+							delayTime = (typeof delayTime == 'number') ? delayTime : parseInt(delayTime);
+							setTimeout(function(){
+								if (remove.parentNode) remove.parentNode.removeChild(remove);
+							}, delayTime);
+							return;
+						}
+
+						this.parentNode.removeChild(this);
+						return;
+					},
+					listens:{
+						add:function(listenElement, event, func, useCapture){
+							if (!this._dialog || !this._list) return console.error('undefined');
+							if (!(listenElement instanceof HTMLElement) || !event || (typeof func !== 'function')) return console.error('arguments');
+
+							this._list.push(new Array(listenElement, event, func));
+							listenElement.addEventListener(event, func);
+						},
+						remove:function(listenElementOptional, eventOptional, funcOptional){
+							if (!this._dialog || !this._list) return console.error('undefined');
+
+							var list = this._list;
+							if (listenElementOptional && eventOptional && funcOptional){
+								var index = list.indexOf(new Array(listenElementOptional, eventOptional, funcOptional));
+								if (index != -1){
+									list[index][0].removeEventListener(list[index][1], list[index][2]);
+									list.splice(index, 1);
+									return;
+								}
+							}else if (listenElementOptional && eventOptional){
+								for (var i = list.length - 1; i >= 0; i--){
+									if (list[i][0] == listenElementOptional && list[i][1] == eventOptional){
+										list[i][0].removeEventListener(list[i][1], list[i][2]);
+										list.splice(i, 1);
+									}
+								}
+							}else if (listenElementOptional && funcOptional){
+								for (var i = list.length - 1; i >= 0; i--){
+									if (list[i][0] == listenElementOptional && list[i][2] == funcOptional){
+										list[i][0].removeEventListener(list[i][1], list[i][2]);
+										list.splice(i, 1);
+									}
+								}
+							}else if (eventOptional && funcOptional){
+								for (var i = list.length - 1; i >= 0; i--){
+									if (list[i][1] == eventOptional && list[i][2] == funcOptional){
+										list[i][0].removeEventListener(list[i][1], list[i][2]);
+										list.splice(i, 1);
+									}
+								}
+							}else if (listenElementOptional){
+								for (var i = list.length - 1; i >= 0; i--){
+									if (list[i][0] == listenElementOptional){
+										list[i][0].removeEventListener(list[i][1], list[i][2]);
+										list.splice(i, 1);
+									}
+								}
+							}else if (eventOptional){
+								for (var i = list.length - 1; i >= 0; i--){
+									if (list[i][1] == eventOptional){
+										list[i][0].removeEventListener(list[i][1], list[i][2]);
+										list.splice(i, 1);
+									}
+								}
+							}else if (funcOptional){
+								for (var i = list.length - 1; i >= 0; i--){
+									if (list[i][2] == funcOptional){
+										list[i][0].removeEventListener(list[i][1], list[i][2]);
+										list.splice(i, 1);
+									}
+								}
+							}
+						},
+						clear:function(){
+							if (!this._dialog || !this._list) return console.error('undefined');
+
+							var list = this._list;
+							for (var i = list.length - 1; i >= 0; i--){
+								list[i][0].removeEventListener(list[i][1], list[i][2]);
+								list[i] = undefined;
+							}
+							list.length = 0;
+						}
+					}
+				},
 				// NOTE layout -> boundsCaches,queueNextFrameTick,layoutDiscard,isMobile,dataset,sheet,
 				//  zooms,getCardBestScale,getHandCardSize
 				layout: {

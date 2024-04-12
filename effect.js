@@ -1,6 +1,6 @@
 'use strict';
 importModule.import(function(lib, game, ui, get, ai, _status){
-	decadeUI.effect = {
+	AIO.effect = {
 		dialog:{
 			create:function(titleText){
 				return decadeUI.dialog.create('effect-dialog dui-dialog');
@@ -86,7 +86,7 @@ importModule.import(function(lib, game, ui, get, ai, _status){
 			},
 		},
 		line:function(dots){
-			decadeUI.animate.add(function(source, target, e){
+			AIO.animate.add(function(source, target, e){
 				var ctx = e.context;
 				ctx.shadowColor = 'yellow';
 				ctx.shadowBlur = 1;
@@ -103,10 +103,10 @@ importModule.import(function(lib, game, ui, get, ai, _status){
 				var tail = this.tail < 0 ? 0 : this.tail;
 				var head = this.head;
 				if (this.tail <= 1) {
-					var x1 = decadeUI.get.lerp(source.x, target.x, tail);
-					var y1 = decadeUI.get.lerp(source.y, target.y, tail);
-					var x2 = decadeUI.get.lerp(source.x, target.x, head);
-					var y2 = decadeUI.get.lerp(source.y, target.y, head);
+					var x1 = AIO.lerp(source.x, target.x, tail); // Fixme lib库中没有类似的函数嘛
+					var y1 = AIO.lerp(source.y, target.y, tail);
+					var x2 = AIO.lerp(source.x, target.x, head);
+					var y2 = AIO.lerp(source.y, target.y, head);
 					e.drawLine(x1, y1, x2, y2, 'rgb(250,220,140)', 2.6);
 					return false;
 				} else {
@@ -141,10 +141,10 @@ importModule.import(function(lib, game, ui, get, ai, _status){
 			effect.style.transition = 'all 4s';
 			effect.style.zIndex = 7;
 			
-			var anim = decadeUI.animation;
+			var anim = AIO.animation;
 			var bounds = anim.getSpineBounds('effect_jisha1');
 			
-			game.playAudio('../extension', decadeUI.extensionName, 'audio/kill_effect_sound.mp3');
+			game.playAudio('../extension', AIO.extensionName, 'audio/kill_effect_sound.mp3');
 			if (bounds == void 0) {
 				var lightLarge = decadeUI.dialog.create('li-big', effect);
 				victim.rout = decadeUI.dialog.create('rout', victim);
@@ -156,7 +156,7 @@ importModule.import(function(lib, game, ui, get, ai, _status){
 				var height = ui.window.offsetHeight;
 				var x, y , scale;
 				for (var i = 0; i < 10; i++) {
-					x = decadeUI.getRandom(0, 100) + 'px';
+					x = decadeUI.getRandom(0, 100) + 'px'; //Fixme lib中没有对应的函数嘛，为什么要用随机函数
 					y = decadeUI.getRandom(0, height / 4) + 'px';
 					x = decadeUI.getRandom(0, 1) == 1 ? x : '-' + x;
 					y = decadeUI.getRandom(0, 1) == 1 ? y : '-' + y;
@@ -175,7 +175,7 @@ importModule.import(function(lib, game, ui, get, ai, _status){
 				ui.refresh(effect);
 			}
 			
-			decadeUI.delay(2000);
+			decadeUI.delay(2000); // Fixme lib中没有对应的函数吗
 			effect.style.backgroundColor = 'rgba(0,0,0,0)';
 			effect.close(3000);
 			effect = null;
@@ -184,7 +184,7 @@ importModule.import(function(lib, game, ui, get, ai, _status){
 		skill:function(player, skillName, vice){
 			if (get.itemtype(player) != 'player') return console.error('player');
 			
-			var animation = decadeUI.animation;
+			var animation = AIO.animation;
 			var asset = animation.spine.assets['effect_xianding'];
 			if (!asset) return console.error('[effect_xianding]特效未加载');
 			if (!asset.ready) animation.prepSpine('effect_xianding');

@@ -69,7 +69,7 @@ var AIOlib;
 	AIOlib.ease = function(fraction){
 		if (!AIOlib.b3ease) AIOlib.b3ease = new AIOlib.CubicBezierEase(0.25, 0.1, 0.25, 1);
 		return AIOlib.b3ease.ease(fraction);
-	},
+	};
 
 	AIOlib.CubicBezierEase = (function(){
 		function CubicBezierEase (p1x, p1y, p2x, p2y) {
