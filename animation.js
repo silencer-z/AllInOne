@@ -1,6 +1,6 @@
 'use strict';
-var AIOlib;
-(function(AIOlib){
+var AnimationUtils;
+(function(AnimationUtils){
 	/**
 	 * 节流函数在一定时间间隔内只允许函数被调用一次，以减少函数被频繁调用的情况
 	 * @param func 传入函数
@@ -8,17 +8,14 @@ var AIOlib;
 	 * @param context 上下文
 	 * @returns {(function(): void)|*}
 	 */
-	AIOlib.throttle = function (func, timeout, context) {
+	AnimationUtils.throttle = function (func, timeout, context) {
 		var args;
 		var timer;
 		var previous;
 		return function () {
-			if (timer)
-				clearTimeout(timer);
-			
-			if (previous == null)
-				previous = performance.now();
-				
+			if (timer) clearTimeout(timer);
+			if (previous == null) previous = performance.now();
+
 			args = arguments;
 			var timestamp = performance.now() - previous;
 			if (timestamp >= timeout) {
@@ -34,11 +31,14 @@ var AIOlib;
 			}
 		}
 	};
-
-	AIOlib.observeSize = (function(){
+	/**
+	 * 用于观察元素的大小变化，并在变化时执行回调函数
+	 * @type {null|(function(*, *): void)}
+	 */
+	AnimationUtils.observeSize = (function(){
 		if (!self.ResizeObserver)
 			return null;
-		
+
 		var observer = new ResizeObserver(function(entries){
 			var rect;
 			var callback;
@@ -46,12 +46,12 @@ var AIOlib;
 				callback = observer.callbacks[entries[i].target.observeId];
 				if (callback == null)
 					continue;
-				
+
 				rect = entries[i].contentRect;
 				callback({width: rect.width, height: rect.height});
 			}
 		});
-		
+
 		observer.observeId = 0;
 		observer.callbacks = {};
 		return function (target, callback) {
@@ -61,51 +61,84 @@ var AIOlib;
 			obs.callbacks[target.observeId] = callback;
 		}
 	})();
-
-	AIOlib.lerp = function(min, max, fraction){
+	/**
+	 *  插值函数
+	 * @param min 最大值
+	 * @param max 最小值
+	 * @param fraction 比例
+	 * @returns {*}
+	 */
+	AnimationUtils.lerp = function(min, max, fraction){
 		return (max - min) * fraction + min;
 	};
+	/**
+	 * 计算缓动效果
+	 * @param fraction 缓动的百分比
+	 * @returns {*}
+	 */
+	AnimationUtils.ease = function(fraction){
+		if (!AnimationUtils.b3ease) AnimationUtils.b3ease = new AnimationUtils.CubicBezierEase(0.25, 0.1, 0.25, 1);
+		return AnimationUtils.b3ease.ease(fraction);
+	},
+		/**
+		 * 实现了一个三次贝塞尔曲线的缓动函数，可以用于在动画中实现平滑的缓动效果
+		 * @type {CubicBezierEase}
+		 */
+		AnimationUtils.CubicBezierEase = (function(){
+			/**
+			 * 根据控制点计算贝塞尔曲线系数
+			 * @param p1x
+			 * @param p1y
+			 * @param p2x
+			 * @param p2y
+			 * @constructor
+			 */
+			function CubicBezierEase (p1x, p1y, p2x, p2y) {
+				this.cX = 3 * p1x;
+				this.bX = 3 * (p2x - p1x) - this.cX;
+				this.aX = 1 - this.cX - this.bX;
 
-	AIOlib.ease = function(fraction){
-		if (!AIOlib.b3ease) AIOlib.b3ease = new AIOlib.CubicBezierEase(0.25, 0.1, 0.25, 1);
-		return AIOlib.b3ease.ease(fraction);
-	};
+				this.cY = 3 * p1y;
+				this.bY = 3 * (p2y - p1y) - this.cY;
+				this.aY = 1 - this.cY - this.bY;
+			};
+			/**
+			 * 计算给定参数t(0到1之间的值)时贝塞尔曲线在x轴上的值
+			 * @param t
+			 * @returns {number}
+			 */
+			CubicBezierEase.prototype.getX = function (t) {
+				return t * (this.cX + t * (this.bX + t * this.aX));
+			};
+			/**
+			 * 计算给定参数t时贝塞尔曲线在x轴上的导数值
+			 * @param t
+			 * @returns {*}
+			 */
+			CubicBezierEase.prototype.getXDerivative = function (t) {
+				return this.cX + t * (2 * this.bX + 3 * this.aX * t);
+			};
+			/**
+			 * 根据给定的x值，计算对应的y值
+			 * @param x
+			 * @returns {number}
+			 */
+			CubicBezierEase.prototype.ease = function (x) {
+				var prev,
+					t = x;
+				do {
+					prev = t;
+					t = t - ((this.getX(t) - x) / this.getXDerivative(t));
+				} while (Math.abs(t - prev) > 1e-4);
 
-	AIOlib.CubicBezierEase = (function(){
-		function CubicBezierEase (p1x, p1y, p2x, p2y) {
-			this.cX = 3 * p1x;
-			this.bX = 3 * (p2x - p1x) - this.cX;
-			this.aX = 1 - this.cX - this.bX;
 
-			this.cY = 3 * p1y;
-			this.bY = 3 * (p2y - p1y) - this.cY;
-			this.aY = 1 - this.cY - this.bY;
-		};
-			
-		CubicBezierEase.prototype.getX = function (t) {
-			return t * (this.cX + t * (this.bX + t * this.aX));
-		};
-			
-		CubicBezierEase.prototype.getXDerivative = function (t) {
-			return this.cX + t * (2 * this.bX + 3 * this.aX * t);
-		};
-			
-		CubicBezierEase.prototype.ease = function (x) {
-			var prev,
-			t = x;
-			do {
-				prev = t;
-				t = t - ((this.getX(t) - x) / this.getXDerivative(t));
-			} while (Math.abs(t - prev) > 1e-4);
-			
-			
-			return t * (this.cY + t * (this.bY + t * this.aY));
-		};
-			
-		return CubicBezierEase;
-	})();
+				return t * (this.cY + t * (this.bY + t * this.aY));
+			};
 
-	AIOlib.TimeStep = (function(){
+			return CubicBezierEase;
+		})();
+
+	AnimationUtils.TimeStep = (function(){
 		function TimeStep (initParam) {
 			this.start = initParam.start;
 			this.current = initParam.start;
@@ -115,11 +148,11 @@ var AIOlib;
 			this.duration = initParam.duration;
 			this.completed = false;
 		};
-		
+
 		TimeStep.prototype.update = function (delta) {
 			this.time += delta;
-			this.percent = AIOlib.ease(Math.min(this.time / this.duration, 1));
-			
+			this.percent = AnimationUtils.ease(Math.min(this.time / this.duration, 1));
+
 			var start, end;
 			var isArray = false;
 			if (Array.isArray(this.start)) {
@@ -128,27 +161,26 @@ var AIOlib;
 			} else {
 				start = [this.start, 0];
 			}
-			
+
 			if (Array.isArray(this.end)) {
 				isArray = true;
 				end = this.end;
 			} else {
 				end = [this.end, 0];
 			}
-			
+
 			if (isArray) {
-				this.current = [AIOlib.lerp(start[0], end[0], this.percent), AIOlib.lerp(start[1], end[1], this.percent)];
+				this.current = [AnimationUtils.lerp(start[0], end[0], this.percent), AnimationUtils.lerp(start[1], end[1], this.percent)];
 			} else {
-				this.current = AIOlib.lerp(start[0], end[0], this.percent);
+				this.current = AnimationUtils.lerp(start[0], end[0], this.percent);
 			}
-			
+
 			if (this.time >= this.duration) this.completed = true;
 		};
-		
+
 		return TimeStep;
 	})();
-
-	AIOlib.APNode = (function(){
+	AnimationUtils.APNode = (function(){
 		function APNode(initParam) {
 			if (initParam == undefined) initParam = {};
 			this.id = undefined;								// 内部属性，不可更改
@@ -185,7 +217,7 @@ var AIOlib;
 			this.timestepMap = {};								// 内部属性，不可更改
 			this.flipX = initParam.flipX;
 			this.flipY = initParam.flipY;
-		}
+		};
 		/**
 		 * 改变透明度
 		 * @param opacity 透明度
@@ -198,7 +230,7 @@ var AIOlib;
 				this.opacity = opacity;
 			}
 			return this;
-		};
+		}
 		/**
 		 * 改变位置
 		 * @param x 终点x坐标
@@ -247,7 +279,7 @@ var AIOlib;
 		};
 		/**
 		 * 更新位置
-		 * @param e
+		 * @param e event
 		 */
 		APNode.prototype.update = function (e) {
 			function calc(value, refer, dpr) {
@@ -257,8 +289,7 @@ var AIOlib;
 					return value * dpr;
 				}
 			}
-			
-			var domX, domY, domDefaultX, domDefaultY;
+
 			var dpr = e.dpr;
 			var referSize = { width: e.canvas.width, height: e.canvas.height };
 			var domNode = this.referNode instanceof HTMLElement ? this.referNode : undefined;
@@ -267,7 +298,7 @@ var AIOlib;
 					var rect = domNode.getBoundingClientRect();
 					this.referBounds = {
 						x: rect.left,
-						//FIXME 需要添加对应的方法 获取区域大小
+						//Link AIO.get.bodySize()
 						y: AIO.get.bodySize().height - rect.bottom,
 						width: rect.width,
 						height: rect.height,
@@ -428,10 +459,16 @@ var AIOlib;
 			if (typeof this.oncomplete == 'function')
 				this.oncomplete();
 		};
-		
+		/**
+		 * 利用时间步平滑更新动画的移动效果
+		 * @param key 更新属性
+		 * @param start 开始点
+		 * @param end 终止点
+		 * @param duration 持续时间
+		 * @returns {*}
+		 */
 		APNode.prototype.updateTimeStep = function (key, start, end, duration) {
-			if (duration == undefined || duration == 0)
-				return;
+			if (duration == undefined || duration == 0) return;
 			
 			var timestep = this.timestepMap[key];
 			if (timestep) {
@@ -442,7 +479,7 @@ var AIOlib;
 				timestep.completed = false;
 				timestep.duration = duration;
 			} else {
-				timestep = this.timestepMap[key] = new AIOlib.TimeStep({
+				timestep = this.timestepMap[key] = new AnimationUtils.TimeStep({ // Link utils.TimeStep
 					start: start,
 					end: end,
 					duration: duration,
@@ -455,7 +492,7 @@ var AIOlib;
 		return APNode;
 	})();
 
-	AIOlib.AnimationPlayer = (function(){
+	AnimationUtils.AnimationPlayer = (function(){
 		function AnimationPlayer (pathPrefix, parentNode, elementId) {
 			if (!window.spine) return console.error('spine 未定义.');
 			
@@ -562,8 +599,6 @@ var AIOlib;
 			page.texture.setWraps(page.uWrap, page.vWrap);
 			page.width = page.texture.getImage().width;
 			page.height = page.texture.getImage().height;
-			
-			
 			
 			var region = new spine.TextureAtlasRegion();
 			region.page = page;
@@ -761,7 +796,7 @@ var AIOlib;
 		};
 		
 		AnimationPlayer.prototype.playSpine = function (sprite, position){
-			//FIXME 判断开关是否开启
+			//CONFIG 判断开关是否开启
 			if (self.AIOcfg && !self.AIOcfg.gameAnimationEffect) return;
 			if (sprite == undefined) return console.error('playSpine: parameter undefined');
 			if (typeof sprite == 'string') sprite = { name: sprite };
@@ -770,7 +805,7 @@ var AIOlib;
 			var skeletons = this.spine.skeletons;
 			var skeleton;
 			
-			if (!(sprite instanceof AIOlib.APNode && sprite.skeleton.completed)) {
+			if (!(sprite instanceof AnimationUtils.APNode && sprite.skeleton.completed)) {
 				for (var i = 0; i < skeletons.length; i++) {
 					skeleton = skeletons[i];
 					if (skeleton.name == sprite.name && skeleton.completed) break;
@@ -778,9 +813,9 @@ var AIOlib;
 				};
 				if (!skeleton) skeleton = this.prepSpine(sprite.name);
 				
-				if (!(sprite instanceof AIOlib.APNode)) {
+				if (!(sprite instanceof AnimationUtils.APNode)) {
 					var param = sprite;
-					sprite = new AIOlib.APNode(sprite);
+					sprite = new AnimationUtils.APNode(sprite);
 					sprite.id = param.id == undefined ? this.BUILT_ID++ : param.id;
 					this.nodes.push(sprite);
 				}
@@ -1030,13 +1065,13 @@ var AIOlib;
 		return AnimationPlayer;
 	})();
 
-	AIOlib.AnimationPlayerPool = (function(){
+	AnimationUtils.AnimationPlayerPool = (function(){
 		function AnimationPlayerPool(size, pathPrefix, thisName){
 			if (!self.spine) return console.error('spine 未定义.');
 			
 			this.name = thisName;
 			this.animations = new Array(size ? size : 1);
-			for (var i = 0; i < this.animations.length; i++) this.animations[i] = new AIOlib.AnimationPlayer(pathPrefix);
+			for (var i = 0; i < this.animations.length; i++) this.animations[i] = new AnimationUtils.AnimationPlayer(pathPrefix);
 			
 		};
 		
@@ -1090,11 +1125,13 @@ var AIOlib;
 		return AnimationPlayerPool;
 	})();
 
-	AIOlib.BUILT_ID = 0;
-	AIOlib.DynamicWorkers = new Array(2);
-	AIOlib.DynamicPlayer = (function(){
+	AnimationUtils.BUILT_ID = 0;
+
+	AnimationUtils.DynamicWorkers = new Array(2);
+
+	AnimationUtils.DynamicPlayer = (function(){
 		function DynamicPlayer(pathPrefix){
-			this.id = AIOlib.BUILT_ID++;
+			this.id = AnimationUtils.BUILT_ID++;
 			this.dpr = 1;
 			this.width = 120;
 			this.height = 180;
@@ -1104,7 +1141,7 @@ var AIOlib;
 			var offscreen = self.OffscreenCanvas != undefined;
 			if (offscreen) {
 				offscreen = false;
-				var workers = AIOlib.DynamicWorkers;
+				var workers = AnimationUtils.DynamicWorkers;
 				for (var i = 0; i < workers.length; i++) {
 					if (workers[i] == undefined) {
 						workers[i] = new Worker(AssetPath + 'dynamicWorker.js');
@@ -1116,7 +1153,7 @@ var AIOlib;
 					this.renderer = workers[i];
 					this.canvas = document.createElement('canvas');
 					this.canvas.className = 'animation-player';
-					AIOlib.observeSize(this.canvas, AIOlib.throttle(function(newSize){
+					AnimationUtils.observeSize(this.canvas, AnimationUtils.throttle(function(newSize){
 						this.height = Math.round(newSize.height);
 						this.width  = Math.round(newSize.width);
 						this.update();
@@ -1137,10 +1174,10 @@ var AIOlib;
 			}
 			
 			if (!offscreen) {
-				var renderer = new AIOlib.AnimationPlayer(AssetPath + pathPrefix);
+				var renderer = new AnimationUtils.AnimationPlayer(AssetPath + pathPrefix);
 				this.canvas = renderer.canvas;
 				this.renderer = renderer;
-				AIO.bodySensor.addListener(AIOlib.throttle(function(){
+				AIO.bodySensor.addListener(AnimationUtils.throttle(function(){ //Link utils.throttle
 					this.renderer.resized = false;
 				}, 100, this), true);
 			}
@@ -1247,245 +1284,241 @@ var AIOlib;
 		return DynamicPlayer;
 	})();
 	
-})(AIOlib || (AIOlib = {}));
+})(AnimationUtils || (AnimationUtils = {}));
 
-var importModule;
-if (importModule)
-	importModule.import(function(lib, game, ui, get, ai, _status){
-		AIO.animation = (function(){
-			// NOTE 这里创建了一个AnimationPlayer并命名了，且用到了之前说的传感器
-			var animation = new AIO.AnimationPlayer(AssetPath + 'assets/animation/', document.body, 'AIO-canvas');
-			AIO.bodySensor.addListener(function(){ animation.resized = false; }, true);
-			// NOTE AnimationPlayerPool不知道有啥用
-			animation.cap = new AIO.AnimationPlayerPool(4, AssetPath + 'assets/animation/', 'AIO.animation');
+importModule.import(function(lib, game, ui, get, ai, _status){
+	AIO.animation = (function(){
+		// NOTE 这里创建了一个AnimationPlayer并命名了，且用到了之前说的传感器
+		var animation = new AnimationUtils.AnimationPlayer(AssetPath + 'assets/animation/', document.body, 'canvas');
+		AIO.bodySensor.addListener(function(){ animation.resized = false; }, true); // Link AIO.bodySensor
+		// NOTE AnimationPlayerPool不知道有啥用
+		animation.cap = new AnimationUtils.AnimationPlayerPool(4, AssetPath + 'assets/animation/', 'animation');
 
-			var fileList = [
-				{name: 'effect_youxikaishi'},
-				{name: 'effect_youxikaishi_shousha'},
-				{name: 'effect_baguazhen'},
-				{name: 'effect_baiyinshizi'},
-				{name: 'effect_cixiongshuanggujian'},
-				{name: 'effect_fangtianhuaji'},
-				{name: 'effect_guanshifu'},
-				{name: 'effect_gudingdao'},
-				{name: 'effect_hanbingjian'},
-				{name: 'effect_qilingong'},
-				{name: 'effect_qinggangjian'},
-				{name: 'effect_qinglongyanyuedao'},
-				{name: 'effect_renwangdun'},
-				{name: 'effect_shoujidonghua'},
-				{name: 'effect_tengjiafangyu'},
-				{name: 'effect_tengjiaranshao'},
-				{name: 'effect_zhangbashemao'},
-				{name: 'effect_zhiliao'},
-				{name: 'effect_zhugeliannu'},
-				{name: 'effect_zhuqueyushan'},
-				{name: 'effect_jinhe'},
-				{name: 'effect_numa'},
-				{name: 'effect_nvzhuang'},
-				{name: 'effect_wufengjian'},
-				{name: 'effect_yajiaoqiang'},
-				{name: 'effect_yinfengjia'},
-				{name: 'effect_zheji'},
-				{name: 'effect_jisha1'},
-				{name: 'effect_zhenwang'},
-				{name: 'effect_lebusishu'},
-				{name: 'effect_bingliangcunduan'},
-				{name: 'effect_nanmanruqin'},
-				{name: 'effect_taoyuanjieyi'},
-				{name: 'effect_shandian'},
-				{name: 'effect_wanjianqifa_full'},
-				{name: 'effect_xianding', fileType: 'json'},
-				{name: 'effect_caochuanjiejian', follow: true},
-				{name: 'effect_guohechaiqiao', follow: true},
-				{name: 'effect_leisha', follow: true},
-				{name: 'effect_heisha', follow: true},
-				{name: 'effect_huosha', follow: true},
-				{name: 'effect_hongsha', follow: true},
-				{name: 'effect_huogong', follow: true},
-				{name: 'effect_panding', follow: true},
-				{name: 'effect_shan', follow: true},
-				{name: 'effect_tao', follow: true},
-				{name: 'effect_tiesuolianhuan', follow: true},
-				{name: 'effect_jiu', follow: true},
-				{name: 'effect_shunshouqianyang', follow: true},
-				{name: 'effect_shushangkaihua', follow: true},
-				{name: 'effect_wanjianqifa', follow: true},
-				{name: 'effect_wuzhongshengyou', follow: true},
-				{name: 'effect_wuxiekeji', follow: true},
-				{name: 'effect_wugufengdeng', follow: true},
-				{name: 'effect_yuanjiaojingong', follow: true},
-				{name: 'effect_zhijizhibi', follow: true},
-				{name: 'effect_zhulutianxia', follow: true},
-			];
-			var fileNameList = fileList.concat();
-			var read = function() {
-				if (fileNameList.length) {
-					var file = fileNameList.shift();
-					if (file.follow) {
-						//	这个是专门播放追踪卡牌的动画，调用方式 AIO.animation.cap.playSpineTo(element, animation, position);
-						//	建议非追踪对象的特效不要滥用，因为每次导入1个骨骼会生成4个预制骨骼，资源占用较多
-						animation.cap.loadSpine(file.name, file.fileType, function(){
-							read();
-						});
-					} else {
-						//	这个是专门播放全屏位置的动画
-						animation.loadSpine(file.name, file.fileType, function(){
-							read();
-							animation.prepSpine(this.name);
-						});
-					}
+		var fileList = [
+			{name: 'effect_youxikaishi'},
+			{name: 'effect_youxikaishi_shousha'},
+			{name: 'effect_baguazhen'},
+			{name: 'effect_baiyinshizi'},
+			{name: 'effect_cixiongshuanggujian'},
+			{name: 'effect_fangtianhuaji'},
+			{name: 'effect_guanshifu'},
+			{name: 'effect_gudingdao'},
+			{name: 'effect_hanbingjian'},
+			{name: 'effect_qilingong'},
+			{name: 'effect_qinggangjian'},
+			{name: 'effect_qinglongyanyuedao'},
+			{name: 'effect_renwangdun'},
+			{name: 'effect_shoujidonghua'},
+			{name: 'effect_tengjiafangyu'},
+			{name: 'effect_tengjiaranshao'},
+			{name: 'effect_zhangbashemao'},
+			{name: 'effect_zhiliao'},
+			{name: 'effect_zhugeliannu'},
+			{name: 'effect_zhuqueyushan'},
+			{name: 'effect_jinhe'},
+			{name: 'effect_numa'},
+			{name: 'effect_nvzhuang'},
+			{name: 'effect_wufengjian'},
+			{name: 'effect_yajiaoqiang'},
+			{name: 'effect_yinfengjia'},
+			{name: 'effect_zheji'},
+			{name: 'effect_jisha1'},
+			{name: 'effect_zhenwang'},
+			{name: 'effect_lebusishu'},
+			{name: 'effect_bingliangcunduan'},
+			{name: 'effect_nanmanruqin'},
+			{name: 'effect_taoyuanjieyi'},
+			{name: 'effect_shandian'},
+			{name: 'effect_wanjianqifa_full'},
+			{name: 'effect_xianding', fileType: 'json'},
+			{name: 'effect_caochuanjiejian', follow: true},
+			{name: 'effect_guohechaiqiao', follow: true},
+			{name: 'effect_leisha', follow: true},
+			{name: 'effect_heisha', follow: true},
+			{name: 'effect_huosha', follow: true},
+			{name: 'effect_hongsha', follow: true},
+			{name: 'effect_huogong', follow: true},
+			{name: 'effect_panding', follow: true},
+			{name: 'effect_shan', follow: true},
+			{name: 'effect_tao', follow: true},
+			{name: 'effect_tiesuolianhuan', follow: true},
+			{name: 'effect_jiu', follow: true},
+			{name: 'effect_shunshouqianyang', follow: true},
+			{name: 'effect_shushangkaihua', follow: true},
+			{name: 'effect_wanjianqifa', follow: true},
+			{name: 'effect_wuzhongshengyou', follow: true},
+			{name: 'effect_wuxiekeji', follow: true},
+			{name: 'effect_wugufengdeng', follow: true},
+			{name: 'effect_yuanjiaojingong', follow: true},
+			{name: 'effect_zhijizhibi', follow: true},
+			{name: 'effect_zhulutianxia', follow: true},
+		];
+		var fileNameList = fileList.concat();
+		var read = function() {
+			if (fileNameList.length) {
+				var file = fileNameList.shift();
+				if (file.follow) {
+					//	这个是专门播放追踪卡牌的动画，调用方式 AIO.animation.cap.playSpineTo(element, animation, position);
+					//	建议非追踪对象的特效不要滥用，因为每次导入1个骨骼会生成4个预制骨骼，资源占用较多
+					animation.cap.loadSpine(file.name, file.fileType, function(){
+						read();
+					});
+				} else {
+					//	这个是专门播放全屏位置的动画
+					animation.loadSpine(file.name, file.fileType, function(){
+						read();
+						animation.prepSpine(this.name);
+					});
 				}
-			};read();read();
-			// 装备卡牌特效
-			var skillAnimation = (void function(){
-				var defines = {
-					skill:{
-						bagua_skill: { skill: 'bagua_skill', name: 'effect_baguazhen', scale: 0.6 },
-						baiyin_skill: { skill: 'baiyin_skill', name: 'effect_baiyinshizi', scale: 0.5 },
-						bazhen_bagua: { skill: 'bazhen_bagua', name: 'effect_baguazhen', scale: 0.6 },
-						cixiong_skill: { skill: 'cixiong_skill', name: 'effect_cixiongshuanggujian', scale: 0.5 },
-						fangtian_skill: { skill: 'fangtian_skill', name: 'effect_fangtianhuaji', scale: 0.7 },
-						guanshi_skill: { skill: 'guanshi_skill', name: 'effect_guanshifu', scale: 0.7 },
-						guding_skill: { skill: 'guding_skill', name: 'effect_gudingdao', scale: 0.6, x: [0, 0.4], y: [0, 0.05] },
-						hanbing_skill: { skill: 'hanbing_skill', name: 'effect_hanbingjian', scale: 0.5 },
-						linglong_bagua: { skill: 'linglong_bagua', name: 'effect_baguazhen', scale: 0.5 },
-						qilin_skill: { skill: 'qilin_skill', name: 'effect_qilingong', scale: 0.5 },
-						qinggang_skill: { skill: 'qinggang_skill', name: 'effect_qinggangjian', scale: 0.7 },
-						qinglong_skill: { skill: 'qinglong_skill', name: 'effect_qinglongyanyuedao', scale: 0.6 },
-						renwang_skill: { skill: 'renwang_skill', name: 'effect_renwangdun', scale: 0.5 },
-						tengjia1: { skill: 'tengjia1', name: 'effect_tengjiafangyu', scale: 0.6 },
-						tengjia2: { skill: 'tengjia2', name: 'effect_tengjiaranshao', scale: 0.6 },
-						tengjia3: { skill: 'tengjia3', name: 'effect_tengjiafangyu', scale: 0.6 },
-						zhangba_skill: { skill: 'zhangba_skill', name: 'effect_zhangbashemao', scale: 0.7 },
-						zhuge_skill: { skill: 'zhuge_skill', name: 'effect_zhugeliannu', scale: 0.5 },
-						zhuque_skill: { skill: 'zhuque_skill', name: 'effect_zhuqueyushan', scale: 0.6 },
-						jinhe_lose: { skill: 'jinhe_lose', name: 'effect_jinhe',scale: 0.4 },
-						numa: { skill: 'numa', name: 'effect_numa', scale: 0.4 },
-						nvzhuang: { skill: 'nvzhuang', name: 'effect_nvzhuang', scale: 0.5 },
-						wufengjian_skill: { skill: 'wufengjian_skill', name: 'effect_wufengjian', scale: 0.4 },
-						yajiaoqiang_skill: { skill: 'yajiaoqiang_skill', name: 'effect_yajiaoqiang', scale: 0.5 },
-						yinfengjia_skill: { skill: 'yinfengjia_skill', name: 'effect_yinfengjia', scale: 0.5 },
-						zheji: { skill: 'zheji', name: 'effect_zheji', scale: 0.35 },
-						lebu: { skill: 'lebu', name: 'effect_lebusishu', scale: 0.7 },
-						bingliang: { skill: 'bingliang', name: 'effect_bingliangcunduan', scale: 0.7 },
-						shandian: { skill: 'shandian', name: 'effect_shandian', scale: 0.7 },
-					},
-					card: {
-						nanman: { card: 'nanman', name: 'effect_nanmanruqin', scale: 0.6, y: [0, 0.4] },
-						wanjian: { card: 'wanjian', name: 'effect_wanjianqifa_full', scale: 1.5},
-						taoyuan: { card: 'taoyuan', name: 'effect_taoyuanjieyi'},
-					}
+			}
+		};read();read();
+		// 装备卡牌特效
+		var skillAnimation = (function(){
+			var defines = {
+				skill:{
+					bagua_skill: { skill: 'bagua_skill', name: 'effect_baguazhen', scale: 0.6 },
+					baiyin_skill: { skill: 'baiyin_skill', name: 'effect_baiyinshizi', scale: 0.5 },
+					bazhen_bagua: { skill: 'bazhen_bagua', name: 'effect_baguazhen', scale: 0.6 },
+					cixiong_skill: { skill: 'cixiong_skill', name: 'effect_cixiongshuanggujian', scale: 0.5 },
+					fangtian_skill: { skill: 'fangtian_skill', name: 'effect_fangtianhuaji', scale: 0.7 },
+					guanshi_skill: { skill: 'guanshi_skill', name: 'effect_guanshifu', scale: 0.7 },
+					guding_skill: { skill: 'guding_skill', name: 'effect_gudingdao', scale: 0.6, x: [0, 0.4], y: [0, 0.05] },
+					hanbing_skill: { skill: 'hanbing_skill', name: 'effect_hanbingjian', scale: 0.5 },
+					linglong_bagua: { skill: 'linglong_bagua', name: 'effect_baguazhen', scale: 0.5 },
+					qilin_skill: { skill: 'qilin_skill', name: 'effect_qilingong', scale: 0.5 },
+					qinggang_skill: { skill: 'qinggang_skill', name: 'effect_qinggangjian', scale: 0.7 },
+					qinglong_skill: { skill: 'qinglong_skill', name: 'effect_qinglongyanyuedao', scale: 0.6 },
+					renwang_skill: { skill: 'renwang_skill', name: 'effect_renwangdun', scale: 0.5 },
+					tengjia1: { skill: 'tengjia1', name: 'effect_tengjiafangyu', scale: 0.6 },
+					tengjia2: { skill: 'tengjia2', name: 'effect_tengjiaranshao', scale: 0.6 },
+					tengjia3: { skill: 'tengjia3', name: 'effect_tengjiafangyu', scale: 0.6 },
+					zhangba_skill: { skill: 'zhangba_skill', name: 'effect_zhangbashemao', scale: 0.7 },
+					zhuge_skill: { skill: 'zhuge_skill', name: 'effect_zhugeliannu', scale: 0.5 },
+					zhuque_skill: { skill: 'zhuque_skill', name: 'effect_zhuqueyushan', scale: 0.6 },
+					jinhe_lose: { skill: 'jinhe_lose', name: 'effect_jinhe',scale: 0.4 },
+					numa: { skill: 'numa', name: 'effect_numa', scale: 0.4 },
+					nvzhuang: { skill: 'nvzhuang', name: 'effect_nvzhuang', scale: 0.5 },
+					wufengjian_skill: { skill: 'wufengjian_skill', name: 'effect_wufengjian', scale: 0.4 },
+					yajiaoqiang_skill: { skill: 'yajiaoqiang_skill', name: 'effect_yajiaoqiang', scale: 0.5 },
+					yinfengjia_skill: { skill: 'yinfengjia_skill', name: 'effect_yinfengjia', scale: 0.5 },
+					zheji: { skill: 'zheji', name: 'effect_zheji', scale: 0.35 },
+					lebu: { skill: 'lebu', name: 'effect_lebusishu', scale: 0.7 },
+					bingliang: { skill: 'bingliang', name: 'effect_bingliangcunduan', scale: 0.7 },
+					shandian: { skill: 'shandian', name: 'effect_shandian', scale: 0.7 },
+				},
+				card: {
+					nanman: { card: 'nanman', name: 'effect_nanmanruqin', scale: 0.6, y: [0, 0.4] },
+					wanjian: { card: 'wanjian', name: 'effect_wanjianqifa_full', scale: 1.5},
+					taoyuan: { card: 'taoyuan', name: 'effect_taoyuanjieyi'},
 				}
+			}
 
-				/**
-				 *根据卡牌名称在卡牌特效库中寻找并播放
-				 * @param card 传入卡牌名称
-				 */
-				var cardAnimate = function(card){
+			/**
+			 *根据卡牌名称在卡牌特效库中寻找并播放
+			 * @param card 传入卡牌名称
+			 */
+			var cardAnimate = function(card){
 
-					var anim = defines.card[card.name];
-					if (!anim) return console.error('cardAnimate:' + card.name);
-					animation.playSpine(anim.name, { x: anim.x, y: anim.y, scale: anim.scale });
-				};
-				for (var key in defines.card) {
-					lib.animate.card[defines.card[key].card] = cardAnimate;
-				}
+				var anim = defines.card[card.name];
+				if (!anim) return console.error('cardAnimate:' + card.name);
+				animation.playSpine(anim.name, { x: anim.x, y: anim.y, scale: anim.scale });
+			};
+			for (var key in defines.card) {
+				lib.animate.card[defines.card[key].card] = cardAnimate;
+			}
 
-				var skillAnimate = function (name) {
-					var anim = defines.skill[name];
-					if (!anim) return console.error('skillAnimate:' + name);
-					animation.playSpine(anim.name, { x: anim.x, y: anim.y, scale: anim.scale, parent:this });
-				};
-				for (var key in defines.skill) {
-					lib.animate.skill[defines.skill[key].skill] = skillAnimate;
-				}
+			var skillAnimate = function (name) {
+				var anim = defines.skill[name];
+				if (!anim) return console.error('skillAnimate:' + name);
+				animation.playSpine(anim.name, { x: anim.x, y: anim.y, scale: anim.scale, parent:this });
+			};
+			for (var key in defines.skill) {
+				lib.animate.skill[defines.skill[key].skill] = skillAnimate;
+			}
 
-				var trigger = {
-					card:{
-						nvzhuang:{
-							onEquip:function(){
-								if (player.sex == 'male' && player.countCards('he', function(cardx){ return cardx != card; })) {
+			var trigger = {
+				card:{
+					nvzhuang:{
+						onEquip:function(){
+							if (player.sex == 'male' && player.countCards('he', function(cardx){ return cardx != card; })) {
+								lib.animate.skill['nvzhuang'].call(player, 'nvzhuang');
+								player.chooseToDiscard(true, function(card) {
+									return card != _status.event.card;
+								}, 'he').set('card', card);
+							}
+						},
+						onLose:function(){
+							if (player.sex != 'male') return;
+							var next = game.createEvent('nvzhuang_lose');
+							event.next.remove(next);
+							var evt = event.getParent();
+							if (evt.getlx === false) evt = evt.getParent();
+							evt.after.push(next);
+							next.player = player;
+							next.setContent(function() {
+								if (player.countCards('he')) {
 									lib.animate.skill['nvzhuang'].call(player, 'nvzhuang');
-									player.chooseToDiscard(true, function(card) {
-										return card != _status.event.card;
-									}, 'he').set('card', card);
+									player.chooseToDiscard(true, 'he');
 								}
-							},
-							onLose:function(){
-								if (player.sex != 'male') return;
-								var next = game.createEvent('nvzhuang_lose');
-								event.next.remove(next);
-								var evt = event.getParent();
-								if (evt.getlx === false) evt = evt.getParent();
-								evt.after.push(next);
-								next.player = player;
-								next.setContent(function() {
-									if (player.countCards('he')) {
-										lib.animate.skill['nvzhuang'].call(player, 'nvzhuang');
-										player.chooseToDiscard(true, 'he');
-									}
-								});
-							}
-						},
-						zheji:{
-							onEquip:function(){
-								lib.animate.skill['zheji'].call(player, 'zheji');
-							}
-						},
-						numa:{
-							onEquip:function(){
-								lib.animate.skill['numa'].call(player, 'numa');
-							}
-						},
-						lebu:{
-							effect:function(){
-								if (result.bool == false){
-									lib.animate.skill['lebu'].call(player, 'lebu');
-									player.skip('phaseUse');
-								}
-							}
-						},
-						bingliang:{
-							effect:function(){
-								if (result.bool == false) {
-									if (get.is.changban()) {
-										player.addTempSkill('bingliang_changban');
-									} else {
-										lib.animate.skill['bingliang'].call(player, 'bingliang');
-										player.skip('phaseDraw');
-									}
-								}
-							}
-						},
-						shandian:{
-							effect:function(){
-								if (result.bool == false) {
-									lib.animate.skill['shandian'].call(player, 'shandian');
-									player.damage(3, 'thunder', 'nosource');
-								} else {
-									player.addJudgeNext(card);
-								}
-							}
-						},
-					},
-				};
-				for (var j in trigger.card) {
-					if (lib.card[j]) {
-						for (var k in trigger.card[j]) {
-							lib.card[j][k] = trigger.card[j][k];
+							});
 						}
+					},
+					zheji:{
+						onEquip:function(){
+							lib.animate.skill['zheji'].call(player, 'zheji');
+						}
+					},
+					numa:{
+						onEquip:function(){
+							lib.animate.skill['numa'].call(player, 'numa');
+						}
+					},
+					lebu:{
+						effect:function(){
+							if (result.bool == false){
+								lib.animate.skill['lebu'].call(player, 'lebu');
+								player.skip('phaseUse');
+							}
+						}
+					},
+					bingliang:{
+						effect:function(){
+							if (result.bool == false) {
+								if (get.is.changban()) {
+									player.addTempSkill('bingliang_changban');
+								} else {
+									lib.animate.skill['bingliang'].call(player, 'bingliang');
+									player.skip('phaseDraw');
+								}
+							}
+						}
+					},
+					shandian:{
+						effect:function(){
+							if (result.bool == false) {
+								lib.animate.skill['shandian'].call(player, 'shandian');
+								player.damage(3, 'thunder', 'nosource');
+							} else {
+								player.addJudgeNext(card);
+							}
+						}
+					},
+				},
+			};
+			for (var j in trigger.card) {
+				if (lib.card[j]) {
+					for (var k in trigger.card[j]) {
+						lib.card[j][k] = trigger.card[j][k];
 					}
 				}
-			})();
-			return animation;
-		}
-	)();
-	// NOTE 动态背景
+			}
+		})();
+		return animation;
+	})();
 	AIO.backgroundAnimation = (function(){
-		var animation = new AIO.AnimationPlayer(AssetPath + 'assets/dynamic/', document.body, 'AIO-canvas-background');
+		var animation = new AnimationUtils.AnimationPlayer(AssetPath + 'assets/dynamic/', document.body, 'canvas-background');
 		AIO.bodySensor.addListener(function(){ animation.resized = false; }, true);
-		
+
 		animation.dprAdaptive = true;
 		animation.definedAssets = {
 			skin_xiaosha: {
@@ -1936,18 +1969,18 @@ if (importModule)
 					height: [0, 1.2],
 				},
 			},
-			
+
 		};
-		
+
 		animation.stop = animation.stopSpineAll;
 		animation.play = function (name, skin) {
 			var definedAssets = this.definedAssets;
-			if (definedAssets[name] == void 0 || definedAssets[name][skin] == void 0) 
+			if (definedAssets[name] == void 0 || definedAssets[name][skin] == void 0)
 				return console.log('没有预定义[asset:' + name + ', skin:' + skin + ']的动态背景.');
-			
+
 			if (this.current && this.current.name == name)
 				return;
-			
+
 			this.stopSpineAll();
 			var playAsset = definedAssets[name][skin];
 			if (!this.hasSpine(playAsset.name)) {
@@ -1960,16 +1993,16 @@ if (importModule)
 				this.current = this.loopSpine(playAsset);
 			}
 		};
-		
-		
+
+
 		animation.check();
-		var background = AIOcfg.dynamicBackground
+		var background = AIOcfg.dynamicBackground //CONFIG AIOcfg.dynamicBackground
 		if (background != void 0 && background != 'off') {
 			var name = background.split('_');
 			var skin = name.splice(name.length - 1, 1)[0];
 			animation.play(name.join('_'), skin);
 		}
-		
+
 		return animation;
 	})();
 });

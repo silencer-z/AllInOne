@@ -1,3 +1,89 @@
+.menuBtn_active{
+    --w: 69px;
+    --h: calc(var(--w) * 446/81);/*高和长*/
+    width: var(--w);
+    height: var(--h);
+    top: 0%;
+    left: calc(100% - 119px);
+    background-size: 100% 100%;
+    background-image: url("image/menu/menuBtn_active.png");
+    z-index: 68;
+    position: relative;
+translateY(-505px);
+    transition:all 1s;
+}
+
+/*设置*/
+.settingBtn{
+    --w: 56px;
+    --h: calc(var(--w) * 73/71);
+    width: var(--w);
+    height: var(--h);
+    bottom: calc(100% - 373px);
+    left: calc(100% - 112.5px);
+    background-size: 100% 100%;
+    background-image: url("image/menu/settingBtn.png");
+    z-index: 99;
+    position:fixed;
+}
+
+/*离开*/
+.leaveBtn{
+    --w: 56px;
+    --h: calc(var(--w) * 73/71);
+    width: var(--w);
+    height: var(--h);
+    bottom: calc(100% - 248px);
+    left: calc(100% - 112.5px);
+    background-size: 100% 100%;
+    background-image: url("image/menu/leaveBtn.png");
+    z-index: 99;
+    position:fixed;
+}
+
+/*背景*/
+.bgBtn{
+    --w: 56px;
+    --h: calc(var(--w) * 73/71);
+    width: var(--w);
+    height: var(--h);
+    bottom: calc(100% - 310px);
+    left: calc(100% - 112.5px);
+    background-size: 100% 100%;
+    background-image: url("image/menu/bgBtn.png");
+    z-index: 99;
+    position:fixed;
+}
+
+/*投降*/
+.surrenderBtn{
+    --w: 56px;
+    --h: calc(var(--w) * 73/71);
+    width: var(--w);
+    height: var(--h);
+    bottom: calc(100% - 187px);
+    left: calc(100% - 112.5px);
+    background-size: 100% 100%;
+    background-image: url("image/menu/surrenderBtn.png");
+    z-index: 99;
+    position:fixed;
+}
+
+/*托管*/
+.autoBtn{
+    --w: 56px;
+    --h: calc(var(--w) * 74/71);
+    width: var(--w);
+    height: var(--h);
+    bottom: calc(100% - 126px);
+    left: calc(100% - 112.5px);
+    background-size: 100% 100%;
+    background-image: url("image/menu/autoBtn.png");
+    z-index: 99;
+    position:fixed;
+}
+
+
 .main.menu.dialog {
     width: 100%;
     height: 100%;
@@ -14,7 +100,6 @@
     transition: all 0.3s;
     transform-origin: center;
 }
-
 
 .main.menu.dialog>.menu-tab {
     height: 80px;

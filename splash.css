@@ -51,12 +51,12 @@
 }
 
 #splash>div:nth-child(1)>.avatar {
-    background: url(image/home/Identities_normal.png) no-repeat left !important;
+    background: url(image/splash/Identities_normal.png) no-repeat left !important;
 
 }
 
 #splash>div:nth-child(1):hover>.avatar {
-    background-image: url(image/home/Identities_hover.png) !important;
+    background-image: url(image/splash/Identities_hover.png) !important;
     transition: all 0.5s;
 }
 
@@ -74,12 +74,12 @@
 }
 
 #splash>div:nth-child(2)>.avatar {
-    background: url(image/home/National_war_normal.png) no-repeat right !important;
+    background: url(image/splash/National_war_normal.png) no-repeat right !important;
 
 }
 
 #splash>div:nth-child(2):hover>.avatar {
-    background-image: url(image/home/National_war_hover.png) !important;
+    background-image: url(image/splash/National_war_hover.png) !important;
     transition: all 0.5s;
 }
 
@@ -95,12 +95,12 @@
 }
 
 #splash>div:nth-child(3)>.avatar {
-    background: url(image/home/Confrontation_normal.png) no-repeat left !important;
+    background: url(image/splash/Confrontation_normal.png) no-repeat left !important;
 
 }
 
 #splash>div:nth-child(3):hover>.avatar {
-    background-image: url(image/home/Confrontation_hover.png) !important;
+    background-image: url(image/splash/Confrontation_hover.png) !important;
     transition: all 0.5s;
 }
 
@@ -118,12 +118,12 @@
 }
 
 #splash>div:nth-child(6)>.avatar {
-    background: url(image/home/Landlord_noramal.png) no-repeat right !important;
+    background: url(image/splash/Landlord_noramal.png) no-repeat right !important;
 
 }
 
 #splash>div:nth-child(6):hover>.avatar {
-    background-image: url(image/home/Landlord_hover.png) !important;
+    background-image: url(image/splash/Landlord_hover.png) !important;
     transition: all 0.5s;
 }
 

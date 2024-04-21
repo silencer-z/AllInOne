@@ -26,7 +26,7 @@ onmessage = function (e) {
 		case 'CREATE':
 			if (dynamics.length >= 4) return;
 			
-			var dynamic = new AIOlib.AnimationPlayer(data.pathPrefix, 'offscreen', data.canvas);
+			var dynamic = new AnimationUtils.AnimationPlayer(data.pathPrefix, 'offscreen', data.canvas);
 			dynamic.id = data.id;
 			dynamics.push(dynamic);
 			break;

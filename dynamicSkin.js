@@ -439,5 +439,5 @@ importModule.import(function(lib, game, ui, get, ai, _status){
 		ol_zhangchangpu: AIO.dynamicSkin.zhangchangpu,
 		re_zhenji: AIO.dynamicSkin.zhenji,
 	};
-	AIO.get.extend(AIO.dynamicSkin, extend);
+	AIO.set.extend(AIO.dynamicSkin, extend);
 });
