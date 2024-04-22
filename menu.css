@@ -82,15 +82,34 @@ translateY(-505px);
     z-index: 99;
     position:fixed;
 }
+.backBtn{
+    --w:255px;
+    --h: calc(var(--w) * 59/255);
+    width: var(--w);
+    height: var(--h);
+    bottom:0;
+    left: calc(100% - var(--w) + 50px);
+    padding: 0 100px 0 0;
 
+    font-size: 24px;
+    line-height: 70px;
+    text-align: center;
 
+    background-size: 100% 100%;
+    background-image: url("image/menu/backBtn.png");
+    z-index: 8;
+}
+/*覆写原菜单的打开动画*/
+.menu-container.hidden>.menu.main {
+    transform-origin: 50%;
+}
 .main.menu.dialog {
     width: 100%;
     height: 100%;
     position: relative;
 
     left: 0;
-    /* top: 0; */
+    top: 0;
     display: flex;
     flex-direction: column;
     border-radius: 0;

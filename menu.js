@@ -59,4 +59,17 @@ importModule.import(function (lib, game, ui, get, ai, _status) {
 		}
 		document.body.appendChild(menuBtn);
 	})
+	// 覆写菜单 添加返回键，具体设置在css中
+	var createMenu = ui.create.menu;
+	// ui.system.hide();
+	ui.create.menu = function (connectMenu) {
+		createMenu.call(this,connectMenu);
+		if(!connectMenu){
+			var backBtn = ui.create.div('.backBtn',"返回",ui.menuContainer);
+			backBtn.style.position = "absolute";
+			backBtn.addEventListener('click', event => {
+				ui.click.config();
+			})
+		}
+	}
 })
