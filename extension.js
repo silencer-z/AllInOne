@@ -1,3 +1,4 @@
+import {splashCreate} from "./splash.js";
 game.import("extension", function (lib, game, ui, get, ai, _status) {
     const ExtensionName = window.ExtentionName = "AllInOne";
     const AssetPath = window.AssetPath = lib.assetURL + "extension/" + ExtensionName + '/';
@@ -51,9 +52,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     // 导入主界面和菜单的css样式表
                     this.importCss(AssetPath + 'menu.css');
 					this.importCss(AssetPath + 'splash.css');
-                    // this.importCss(AssetPath + 'layout.css');
-                    // this.importCss(AssetPath + 'decadeLayout.css');
-                    // this.importCss(AssetPath + 'card.css');
                     // this.importCss(AssetPath + (lib.config.extension_AllInOne_characterStyle == 'on' ? 'equip.css' : 'equip_new.css'));
 
                     // 当且仅当初次载入时，characterStyle == void 0 player1.css(on):十周年， player2.css(off):手杀，player3.css(othersOn):OL移动
@@ -73,6 +71,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     // } else {
                     //     this.importCss(AssetPath + 'home1.css');
                     // }
+					// this.importJs(AssetPath + 'splash.js');
 					this.importJs(AssetPath + 'menu.js');
 					this.importJs(AssetPath + 'indicatorLine.js');
                     // 避免提示是否下载图片和字体素材
@@ -107,9 +106,19 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     if (typeof module != 'function') return console.error('import failed');
                     this.modules.push(module);
                 };
+				importModule.preImport = function (module) {
+					if (!this.preModules) this.preModules = [];
+					if (typeof preModules != 'function') return console.error('import failed');
+					this.preModules.push(module);
+				};
                 return importModule.init();
             })({});
-
+			splashCreate(lib, game, ui, get, ai, _status);
+			// 预加载js导入
+			// lib.init.js(AssetPath + 'splash.js');
+			// if (importModule.preModules)
+			// 	for (var i = 0; i < importModule.preModules.length; i++)
+			// 		importModule.preModules[i](lib, game, ui, get, ai, _status);
         },
         help: {},
         config: {
@@ -243,10 +252,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             indicatorEffect: {
                 name: '指示线特效',
                 init: 'classic',
-				item:{
+				item:{ // TODO 添加动态指示线
 					origin:'默认指示线',
 					classic:'经典指示线',
 					jadeDragon:'金龙指示线',
+					decade:'十周年指示线',
+					decadeDragon:'十周年龙头指示线',
 				},
                 onclick: function (item) {
 					const origin = lib.config['extension_AIO_indicatorEffect'];
@@ -259,8 +270,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
             },
 			criticalHitsEffect:{
 				name:'暴击指示线特效',
-				init: true,
-				intro:'需要打开指示线特效',
+				init: false,
+				intro:'需要打开指示线特效,当伤害大于1时触发',
 			},
 
             skinSwitch: {

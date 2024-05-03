@@ -1,4 +1,4 @@
-.menuBtn_active{
+.popup-container>.menuBtn_active{
     --w: 69px;
     --h: calc(var(--w) * 446/81);/*高和长*/
     width: var(--w);
@@ -14,7 +14,7 @@ translateY(-505px);
 }
 
 /*设置*/
-.settingBtn{
+.popup-container>.settingBtn{
     --w: 56px;
     --h: calc(var(--w) * 73/71);
     width: var(--w);
@@ -28,7 +28,7 @@ translateY(-505px);
 }
 
 /*离开*/
-.leaveBtn{
+.popup-container>.leaveBtn{
     --w: 56px;
     --h: calc(var(--w) * 73/71);
     width: var(--w);
@@ -42,7 +42,7 @@ translateY(-505px);
 }
 
 /*背景*/
-.bgBtn{
+.popup-container>.bgBtn{
     --w: 56px;
     --h: calc(var(--w) * 73/71);
     width: var(--w);
@@ -56,7 +56,7 @@ translateY(-505px);
 }
 
 /*投降*/
-.surrenderBtn{
+.popup-container>.surrenderBtn{
     --w: 56px;
     --h: calc(var(--w) * 73/71);
     width: var(--w);
@@ -70,7 +70,7 @@ translateY(-505px);
 }
 
 /*托管*/
-.autoBtn{
+.popup-container>.autoBtn{
     --w: 56px;
     --h: calc(var(--w) * 74/71);
     width: var(--w);
@@ -82,7 +82,8 @@ translateY(-505px);
     z-index: 99;
     position:fixed;
 }
-.backBtn{
+
+.menu-container>.backBtn{
     --w:255px;
     --h: calc(var(--w) * 59/255);
     width: var(--w);

@@ -1,196 +1,232 @@
-#splash {
-    position: absolute;
-    top: calc(50% - 180px);
-    width: 500px;
-    height: 400px;
-    left: calc(90% - 500px);
-    display: grid;
-    grid-template-columns: repeat(20, 1fr);
-    grid-template-rows: 184px 104px 70px;
-    overflow: visible;
+.splashContainer {
+    width: 100vw;
+    height: 100vh;
+    transition: all 0s;
+}
+/* 顶栏 */
+.splash-topBar {
+    width: 100%;
+    height: 40px;
+    background-position: center;
+    background-image: url('image/splash/topBarBorder.png');
+    background-size: 105% 105%;
+    z-index: 101;
 }
 
-#splash>div {
-    position: relative;
-    width: auto;
-    height: auto;
-    top: auto;
-
-    box-shadow: none;
-    background-image: none;
-    margin: 0;
+.splash-logo {
+    height: 35px;
+    width: calc(35px * 187/101);
+    top: 2px;
+    left: 2%;
+    background-image: url('image/splash/logo.png');
+    background-size: 100% 100%;
 }
 
-#splash:not(.touch)>div:hover:not(.clicked) {
-    transform: none;
+/* 主界面 */
+.splashBG {
+    width: 100%;
+    height: calc(100% - 100px);
+    top: 40px;
+    background-image: url('image/splash/splashBG.png');
+    background-size: 100% 100%;
+    z-index: 100;
+
 }
 
-#splash.slim>div>.splashtext {
-    position: absolute;
-    font-family: 'ATLL', 'HYZLSJ';
-    z-index: 1;
-    right: 0;
+/* 底栏 */
+.splash-bottomBar {
+    width: 100%;
+    height: 60px;
     bottom: 0;
-    writing-mode: horizontal-tb;
-    -webkit-writing-mode: horizontal-tb;
+    background-image: url('image/splash/bottomBar.png');
+    background-size: 100% 100%;
+    z-index: 101
 }
 
-#splash.slim>div>.avatar {
-    box-shadow: none;
+.splash-fctList {
+    position: absolute;
+    height: 40px;
+    width: 200px;
+    top: 12px;
+    right: 4%;
+    z-index: 102;
+    display: flex;
+    gap: 5px;
+}
+
+.splash-fctList>div {
+    position: relative;
+    --h: 40px;
+    height: var(--h);
+    width: var(--h);
+    margin:0 5px;
+    background-size: 100% 100%;
+    z-index: 103;
+    transition: all 0.1s;
+}
+
+.splash-settingBtn {
+    background-image: url('image/splash/Fct_setting.png');
+}
+
+.splash-settingBtn:hover {
+    background-image: url('image/splash/Fct_setting_active.png');
+}
+
+.splash-rankBtn {
+    background-image: url('image/splash/Fct_rank.png');
+}
+
+.splash-rankBtn:hover {
+    background-image: url('image/splash/Fct_rank_active.png');
+}
+
+.splash-skinBtn {
+    background-image: url('image/splash/Fct_skin.png');
+}
+
+.splash-skinBtn:hover {
+    background-image: url('image/splash/Fct_skin_active.png');
+}
+
+.splash-characterBtn {
+    background-image: url('image/splash/Fct_character.png');
+}
+
+.splash-characterBtn:hover {
+    background-image: url('image/splash/Fct_character_active.png');
+}
+
+/* 主菜单 */
+.MenuContainer {
+    width: 50%;
+    padding-bottom: 25%;
+    right: 5%;
+    top: 30%;
+}
+
+.splashMenu {
+    display: grid;
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
-    transition: all 0.5s;
+    grid-template-columns: repeat(14, 1fr);
+    grid-template-rows: repeat(17, 1fr);
 }
 
-/* 身份 */
-#splash>div:nth-child(1) {
-    grid-column: span 14;
-    margin: 0;
+.splashMenu>div {
+    position: relative;
+    transition: all 0.1s;
+    background-size: 100% 100%;
+    margin: 3px;
 }
 
-#splash>div:nth-child(1)>.avatar {
-    background: url(image/splash/Identities_normal.png) no-repeat left !important;
-
-}
-
-#splash>div:nth-child(1):hover>.avatar {
-    background-image: url(image/splash/Identities_hover.png) !important;
-    transition: all 0.5s;
-}
-
-#splash>div:nth-child(1)>.splashtext {
-    font-size: 90px;
-    padding-right: 20px;
-    line-height: 180px;
-}
-
-/* 国战 */
-#splash>div:nth-child(2) {
-    grid-column: span 6;
-    justify-content: end;
-    display: flex;
-}
-
-#splash>div:nth-child(2)>.avatar {
-    background: url(image/splash/National_war_normal.png) no-repeat right !important;
-
-}
-
-#splash>div:nth-child(2):hover>.avatar {
-    background-image: url(image/splash/National_war_hover.png) !important;
-    transition: all 0.5s;
-}
-
-#splash>div:nth-child(2)>.splashtext {
-    font-size: 45px;
-    padding-right: 15px;
-    line-height: 90px;
-}
-
-/* 对决 */
-#splash>div:nth-child(3) {
+.splashMenu>.classicIdentity {
     grid-column: span 10;
+    grid-row: span 11;
+    background-image: url('image/splash/Identities_normal.png');
 }
 
-#splash>div:nth-child(3)>.avatar {
-    background: url(image/splash/Confrontation_normal.png) no-repeat left !important;
-
+.splashMenu>.classicIdentity:hover {
+    background-image: url('image/splash/Identities_hover.png');
 }
 
-#splash>div:nth-child(3):hover>.avatar {
-    background-image: url(image/splash/Confrontation_hover.png) !important;
-    transition: all 0.5s;
+.splashMenu>.nationalWar {
+    grid-column: span 4;
+    grid-row: span 11;
+    background-image: url('image/splash/Confrontation_normal.png');
 }
 
-#splash>div:nth-child(3)>.splashtext {
-    font-size: 45px;
-    padding-right: 35px;
+.splashMenu>.nationalWar:hover {
+    background-image: url('image/splash/Confrontation_hover.png');
+}
+
+.splashMenu>.campConfrontation {
+    grid-column: span 7;
+    grid-row: span 6;
+    background-image: url('image/splash/National_war_normal.png');
+}
+
+.splashMenu>.campConfrontation:hover {
+    background-image: url('image/splash/National_war_hover.png');
+}
+
+.splashMenu>.againstLandlord {
+    grid-column: span 7;
+    grid-row: span 6;
+    background-image: url('image/splash/Landlord_noramal.png');
+}
+
+.splashMenu>.againstLandlord:hover {
+    background-image: url('image/splash/Landlord_hover.png');
+}
+
+.splashContainer>.subMenu {
+    width: 100%;
+    height: 100%;
+}
+
+.subMenu>.title {
+    position: absolute;
+    width: 250px;
+    height: 45px;
+    background-size: 100% 100%;
+    background-image: url('image/splash/title.png');
+}
+
+.subMenu>.title>div{
+    position: absolute;
+}
+
+.subMenu>.title>.splash-backBtn {
+    height: 32px;
+    width: 42px;
+    background-size: 100% 100%;
+    background-image: url('image/splash/backBtn.png');
+}
+.subMenu>.title>.splash-info {
+    height: 40px;
+    width: 240px;
+    font-size: 24px;
+    line-height: 36px;
+    text-align: center;
+}
+.startBtn {
+    position: absolute;
+    height: 50px;
+    width: 170px;
+    top: calc(90% - 50px);
+    left: calc(50% - 95px);
+    background-size: 100% 100%;
+    background-image: url('image/splash/startBtn.png');
+}
+
+.modeListBox {
+    top: 45px;
+    height: calc(100% - 45px);
+    width: 350px;
+    justify-items: center;
+    align-content: center;
+}
+
+.modeListBox>.mode {
+    position: relative;
+    width: 230px;
+    height: 100px;
+    left: 20px;
+    padding-right: 70px;
+
+    font-size: 18px;
+    text-align: center;
     line-height: 100px;
+
+    background-size: 100% 100%;
+    background-image: url('image/splash/mode.png');
 }
 
-/* 斗地主 */
-#splash>div:nth-child(6) {
-    grid-column: span 10;
-    justify-content: end;
-    display: flex;
+.modeListBox>.mode.active {
+    background-image: url('image/splash/mode_active.png');
 }
 
-#splash>div:nth-child(6)>.avatar {
-    background: url(image/splash/Landlord_noramal.png) no-repeat right !important;
-
-}
-
-#splash>div:nth-child(6):hover>.avatar {
-    background-image: url(image/splash/Landlord_hover.png) !important;
-    transition: all 0.5s;
-}
-
-#splash>div:nth-child(6)>.splashtext {
-    font-size: 45px;
-    padding-right: 5px;
-    line-height: 100px;
-}
-
-/* 联机 */
-#splash>div:nth-child(4) {
-    grid-column: span 5;
-    order: 1;
-}
-
-#splash>div:nth-child(4)>.splashtext {
-    font-size: 50px;
-    line-height: 10px;
-}
-
-/* 挑战 */
-#splash>div:nth-child(5) {
-    grid-column: span 5;
-    order: 2;
-}
-
-#splash>div:nth-child(5)>.splashtext {
-    font-size: 50px;
-    line-height: 10px;
-}
-
-/* 单挑 */
-#splash>div:nth-child(7) {
-    grid-column: span 5;
-    order: 3;
-}
-
-#splash>div:nth-child(7)>.splashtext {
-    font-size: 50px;
-    line-height: 10px;
-}
-
-/* 乱斗 */
-#splash>div:nth-child(11) {
-    grid-column: span 5;
-    order: 4;
-    margin: 0;
-}
-
-#splash>div:nth-child(11)>.splashtext {
-    font-size: 50px;
-    line-height: 10px;
-
-}
-
-/* 战棋 */
-#splash>div:nth-child(8) {
-    display: none;
-}
-
-/* 塔防 */
-#splash>div:nth-child(9) {
-    display: none;
-}
-
-/* 炉石 */
-#splash>div:nth-child(10) {
-    display: none;
-
+.modeListBox>.mode.active:hover {
+    background-image: url('image/splash/mode_active_hover.png');
 }

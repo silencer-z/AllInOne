@@ -1,39 +1,102 @@
 importModule.import(function (lib, game, ui, get, ai, _status) {
 	// 保存原有的指示线
 	game.originLineXy = game.linexy;
+	// 十周年指示线
+	game.decadeLineXy = function(path){
+		var from=[path[0],path[1]];
+		var to=[path[2],path[3]];
+
+		var target = {
+			name:'decadeLineXy', 		// 文件名字用于设置背景
+			width:'239px',				// 用于调整指示线显示效果，可以不和图片信息一样，宽度信息拉伸时没有用
+			height:'45px',				// 用于调整指示线显示效果，可以不和图片信息一样
+			stretch:true,				// 是否拉伸
+			setBorder:true,				// 通过设置边框实现点九图效果
+			borderLeft:140,				// 越大头越小
+			borderRight:377,			// 越大尾越大，加起来不能超过图片长度，不然中间会断掉，颜色假如有中断，则最好两个加起来就是图片宽度减一
+		}
+		if(game.chess){
+			game.zsPlayLineAnimation(ui.chess,target,[from,to]);
+		}else{
+			game.zsPlayLineAnimation(ui.arena,target,[from,to]);
+		}
+	};
+	// 十周年龙头指示线
+	game.decadeDragonLineXy = function(path){
+		var from=[path[0],path[1]];
+		var to=[path[2],path[3]];
+		var target = {
+			name:'decadeDragonLineXy',
+			width:'239px',
+			height:'45px',
+			stretch:true,
+			setBorder:true,
+			borderLeft:140,
+			borderRight:377,
+		}
+		if(game.chess){
+			game.zsPlayLineAnimation(ui.chess,target,[from,to]);
+		}else{
+			game.zsPlayLineAnimation(ui.arena,target,[from,to]);
+		}
+	};
 	// 玉龙指示线
 	game.jadeDragonLineXy = function(path){
 		var from=[path[0],path[1]];
 		var to=[path[2],path[3]];
+		var target = {
+			name:'jadeDragonLineXy',
+			width:'239px',
+			height:'25px',
+			stretch:true,
+			setBorder:true,
+			borderLeft:150,
+			borderRight:88,
+		}
 		if(game.chess){
-			game.zsPlayLineAnimation('jadeDragonLineXy',ui.chess,1400,[from,to]);
+			game.zsPlayLineAnimation(ui.chess,target,[from,to]);
 		}else{
-			game.zsPlayLineAnimation('jadeDragonLineXy',ui.arena,1400,[from,to]);
+			game.zsPlayLineAnimation(ui.arena,target,[from,to]);
 		}
 	};
 	// 经典指示线
 	game.classicLineXy = function(path){
 		var from=[path[0],path[1]];
 		var to=[path[2],path[3]];
+		var target = {
+			name:'classicLineXy',
+			width:'239px',
+			height:'25px',
+			stretch:true,
+			setBorder:false,
+		}
 		if(game.chess){
-			game.zsPlayLineAnimation('classicLineXy',ui.chess,1400,[from,to]);
+			game.zsPlayLineAnimation(ui.chess,target,[from,to]);
 		}else{
-			game.zsPlayLineAnimation('classicLineXy',ui.arena,1400,[from,to]);
+			game.zsPlayLineAnimation(ui.arena,target,[from,to]);
 		}
 	};
 	// 暴击指示线
 	game.criticalHitsLineXy = function(path){
 		var from=[path[0],path[1]];
 		var to=[path[2],path[3]];
+		var target = {
+			name:'criticalHitsLineXy',
+			width:'239px',
+			height:'25px',
+			stretch:true,
+			setBorder:false,
+		}
 		if(game.chess){
-			game.zsPlayLineAnimation('criticalHitsLineXy',ui.chess,1400,[from,to]);
+			game.zsPlayLineAnimation(ui.chess,target,[from,to]);
 		}else{
-			game.zsPlayLineAnimation('criticalHitsLineXy',ui.arena,1400,[from,to]);
+			game.zsPlayLineAnimation(ui.arena,target,[from,to]);
 		}
 	};
 
-	game.zsPlayLineAnimation = function (name, node, time, points) {
-		var src= AssetPath + 'image/indicatorLine/' + name + '.png';
+	game.zsPlayLineAnimation = function (node, target, points) {
+		var time = 1100;
+		var src= AssetPath + 'image/indicatorLine/' + target.name + '.png';
 		// 加入暂停，防止出牌太快
 		if (time <= 100000) {
 			if (!_status.paused2 && !_status.nopause) {
@@ -51,12 +114,12 @@ importModule.import(function (lib, game, ui, get, ai, _status) {
 			node.appendChild(div);
 		}
 		// 设定样式
-		div.style.width = "256px";
-		div.style.height = "81px";
+		div.style.width = target.width;
+		div.style.height = target.height;
 		div.style.backgroundSize = "100% 100%";
+
 		div.style.opacity = 1;
 		div.style.zIndex = 1001;
-		div.style.borderRadius = '5px';
 		div.style['pointer-events'] = 'none';
 
 		if (points == undefined){
@@ -67,7 +130,7 @@ importModule.import(function (lib, game, ui, get, ai, _status) {
 			div.style.top = (points[0][1] - div.offsetHeight / 2) + 'px';
 			div.style.left = (points[0][0]) + 'px';
 
-			var timeS = ((time - 450) / 1000) / 2;
+			var timeS = ((time - 100) / 1000) / 6;
 
 			var getAngle = function (x1, y1, x2, y2, bool) {
 				var x = x1 - x2;
@@ -99,49 +162,59 @@ importModule.import(function (lib, game, ui, get, ai, _status) {
 			div.style.transform = 'rotate(' + getAngle(x0, y0, x1, y1, true) + 'deg)' + (x0 > x1 ? '' : ' rotateY(180deg)');
 			div.style['transform-origin'] = '0 50%';
 
-			var div2 = ui.create.div();
-			div2.style.zIndex = 1000;
-			div2.style['pointer-events'] = 'none';
-			div2.style.height = '30px';
-			div2.style.width = (Math.pow(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2), 0.5) + 2) + 'px';
-			div2.style.left = (x0) + 'px';
-			div2.style.top = (y0 - 30) + 'px';
-			div2.style.transform = 'rotate(' + getAngle(x0, y0, x1, y1) + 'deg) scaleX(0)';
-			div2.style['transform-origin'] = '0 50%';
-			div2.style.transition = 'all ' + (timeS * 4 / 3) + 's';
+			if (target != undefined && target.stretch) {
+				var div2 = ui.create.div();
 
-			div2.style.backgroundSize = '100% 100%';
-			div2.style.opacity = '1';
-			div2.style.backgroundImage = "url(" + src + ")";
+				div2.style.height = target.height;
+				var distance = (Math.pow(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2), 0.5))
+				div2.style.width = (distance) + 'px';
+				div2.style.left = (x0) + 'px';
+				div2.style.top = (y0 - div2.offsetHeight/2) + 'px';
+
+				div2.style.zIndex = 1000;
+				div2.style.opacity = '1';
+				div2.style['pointer-events'] = 'none';
+				if(target.setBorder && (typeof (target['borderLeft'])!='undefined') && (typeof (target['borderRight']) != 'undefined')){
+					div2.style['border-image'] = "url(" + src + ")  0 " + target.borderLeft +" 0 " + target.borderRight + " fill / 0px 100px stretch";
+				}else{
+					div2.style.backgroundSize = '100% 100%';
+					div2.style.backgroundImage = "url(" + src + ")";
+				}
+
+				div2.style.transition = 'all 0s';
+				div2.style.transform = 'rotate(' + getAngle(x0, y0, x1, y1) + 'deg) scaleX(0)';
+				div2.style['transform-origin'] = '0 50%';
+				div2.style['transition-timing-function'] = 'ease-out';
+
+				node.appendChild(div2);
+			} else {
+				div.style.backgroundImage = "url(" + src + ")";
+			}
+
 
 			setTimeout(function () {
-				div.style.transition = 'all ' + (timeS * 4 / 3) + 's';
-				div.style.transform += ' translateX(' + (-(Math.pow(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2), 0.5) + 2)) + 'px)';
-				div2.style.transform = 'rotate(' + getAngle(x0, y0, x1, y1) + 'deg) scaleX(1)';
+				div.style.transition = 'all ' + (timeS * 6) + 's';
+				div.style.transform += ' translateX(' + (-(Math.pow(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2), 0.5))) + 'px)';
+
+				if(div2 != undefined){
+					div2.style.transition = 'all ' + (timeS * 3) + 's';
+					div2.style.transform = 'rotate(' + getAngle(x0, y0, x1, y1) + 'deg) scaleX(1)';
+				}
 			}, 50);
 
 			setTimeout(function () {
-				div2.style.transition = 'all ' + (timeS * 2 / 3) + 's';
-				div2.style.transform = 'rotate(' + getAngle(x0, y0, x1, y1) + 'deg) translateX(' +
-					(Math.pow(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2), 0.5) + 2 -
-						Math.pow(Math.pow(div.offsetHeight / 2, 2) + Math.pow(div.offsetWidth / 2, 2), 0.1)) + 'px) scaleX(0.01)';
-			}, 50 + timeS * 4 / 3 * 1000);
+				div2.style.transition = 'all ' + timeS + 's';
+				div2.style.transform = 'rotate(' + getAngle(x0, y0, x1, y1) + 'deg) translateX(' + distance + 'px) scaleX(0.0001)';
+			}, 50 + timeS * 5 * 1000);
 
-			node.appendChild(div2);
 		}
 
-		if (div2 != undefined) {
-			setTimeout(function () {
-				div2.hide();
-			}, time - 350);
-			setTimeout(function () {
-				div.hide();
-			}, time - 400);
-		} else {
-			setTimeout(function () {
-				div.hide();
-			}, time - 350);
-		}
+		setTimeout(function () {
+			div.style.display = "none";
+			if (div2 != undefined) {
+				div2.style.display = "none";
+			}
+		}, time - 50);
 
 		setTimeout(function () {
 
