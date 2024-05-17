@@ -114,11 +114,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 return importModule.init();
             })({});
 			splashCreate(lib, game, ui, get, ai, _status);
-			// 预加载js导入
-			// lib.init.js(AssetPath + 'splash.js');
-			// if (importModule.preModules)
-			// 	for (var i = 0; i < importModule.preModules.length; i++)
-			// 		importModule.preModules[i](lib, game, ui, get, ai, _status);
+			// 添加加载动画 
         },
         help: {},
         config: {
